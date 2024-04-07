@@ -128,12 +128,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Bus.cpp" />
+    <ClCompile Include="Cartridge.cpp" />
+    <ClCompile Include="Mapper.cpp" />
+    <ClCompile Include="Mapper_000.cpp" />
     <ClCompile Include="NESEmulator.cpp" />
+    <ClCompile Include="olc2c02.cpp" />
     <ClCompile Include="olc6502.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bus.h" />
+    <ClInclude Include="Cartridge.h" />
+    <ClInclude Include="Mapper.h" />
+    <ClInclude Include="Mapper_000.h" />
+    <ClInclude Include="olc2c02.h" />
     <ClInclude Include="olc6502.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="nestest.nes" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
