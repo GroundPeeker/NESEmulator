@@ -1397,12 +1397,12 @@ std::map<uint16_t, std::string> olc6502::disassemble(uint16_t nStart, uint16_t n
 	// hex strings because "modern C++"'s method with 
 	// streams is atrocious
 	auto hex = [](uint32_t n, uint8_t d)
-	{
-		std::string s(d, '0');
-		for (int i = d - 1; i >= 0; i--, n >>= 4)
-			s[i] = "0123456789ABCDEF"[n & 0xF];
-		return s;
-	};
+		{
+			std::string s(d, '0');
+			for (int i = d - 1; i >= 0; i--, n >>= 4)
+				s[i] = "0123456789ABCDEF"[n & 0xF];
+			return s;
+		};
 
 	// Starting at the specified address we read an instruction
 	// byte, which in turn yields information from the lookup table
@@ -1440,31 +1440,31 @@ std::map<uint16_t, std::string> olc6502::disassemble(uint16_t nStart, uint16_t n
 		else if (lookup[opcode].addrmode == &olc6502::ZP0)
 		{
 			lo = bus->cpuRead(addr, true); addr++;
-			hi = 0x00;												
+			hi = 0x00;
 			sInst += "$" + hex(lo, 2) + " {ZP0}";
 		}
 		else if (lookup[opcode].addrmode == &olc6502::ZPX)
 		{
 			lo = bus->cpuRead(addr, true); addr++;
-			hi = 0x00;														
+			hi = 0x00;
 			sInst += "$" + hex(lo, 2) + ", X {ZPX}";
 		}
 		else if (lookup[opcode].addrmode == &olc6502::ZPY)
 		{
 			lo = bus->cpuRead(addr, true); addr++;
-			hi = 0x00;														
+			hi = 0x00;
 			sInst += "$" + hex(lo, 2) + ", Y {ZPY}";
 		}
 		else if (lookup[opcode].addrmode == &olc6502::IZX)
 		{
 			lo = bus->cpuRead(addr, true); addr++;
-			hi = 0x00;								
+			hi = 0x00;
 			sInst += "($" + hex(lo, 2) + ", X) {IZX}";
 		}
 		else if (lookup[opcode].addrmode == &olc6502::IZY)
 		{
 			lo = bus->cpuRead(addr, true); addr++;
-			hi = 0x00;								
+			hi = 0x00;
 			sInst += "($" + hex(lo, 2) + "), Y {IZY}";
 		}
 		else if (lookup[opcode].addrmode == &olc6502::ABS)
@@ -1494,7 +1494,7 @@ std::map<uint16_t, std::string> olc6502::disassemble(uint16_t nStart, uint16_t n
 		else if (lookup[opcode].addrmode == &olc6502::REL)
 		{
 			value = bus->cpuRead(addr, true); addr++;
-			sInst += "$" + hex(value, 2) + " [$" + hex(addr + value, 4) + "] {REL}";
+			sInst += "$" + hex(value, 2) + " [$" + hex(addr + (int8_t)value, 4) + "] {REL}";
 		}
 
 		// Add the formed string to a std::map, using the instruction's

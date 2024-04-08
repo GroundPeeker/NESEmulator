@@ -21,6 +21,7 @@ public:
 	bool bEmulationRun = false;
 	float fResidualTime = 0.0f;
 
+	uint8_t nSelectedPalette = 0x00;
 
 	std::string hex(uint32_t n, uint8_t d)
 	{
@@ -149,9 +150,19 @@ public:
 
 		if (GetKey(olc::Key::R).bPressed) nes.reset();
 		if (GetKey(olc::Key::SPACE).bPressed) bEmulationRun = !bEmulationRun;
+		if (GetKey(olc::Key::P).bPressed) (++nSelectedPalette) &= 0x07;
 
 		DrawCpu(516, 2);
 		DrawCode(516, 72, 26);
+
+		const int nSwatchSize = 6;
+		for (int p = 0; p < 8; p++)
+			for (int s = 0; s < 4; s++)
+				FillRect(516 + p * (nSwatchSize * 5) + s * nSwatchSize, 340, nSwatchSize, nSwatchSize, nes.ppu.GetColourFromPaletteRam(p, s));
+		DrawRect(516 + nSelectedPalette * (nSwatchSize * 5) - 1, 339, (nSwatchSize * 4), nSwatchSize, olc::WHITE);
+
+		DrawSprite(516, 348, &nes.ppu.GetPatternTable(0, nSelectedPalette));
+		DrawSprite(648, 348, &nes.ppu.GetPatternTable(1, nSelectedPalette));
 
 		DrawSprite(0, 0, &nes.ppu.GetScreen(), 2);
 
@@ -167,7 +178,7 @@ int main()
 {
 	Demo_olc6502 demo;
 
-	demo.Construct(680, 480, 2, 2);
+	demo.Construct(780, 480, 2, 2);
 	demo.Start();
 	return 0;
 }

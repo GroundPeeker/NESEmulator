@@ -102,12 +102,50 @@ uint8_t olc2c02::ppuRead(uint16_t addr, bool rdonly)
     uint8_t data = 0x00;
     addr &= 0x3FFF;
 
+	if (cart->ppuRead(addr, data)) {
+
+	}
+	else if (addr >= 0x0000 && addr <= 0x1FFF) {
+		data = tblPattern[(addr & 0x1000)][addr & 0x0FFF];
+	}
+	else if (addr >= 0x2000 && addr <= 0x3EFF) {
+
+	}
+	else if (addr >= 0x3F00 && addr <= 0x3FFF) {
+		addr &= 0x001F;
+		if (addr == 0x0010) addr = 0x0000;
+		if (addr == 0x0014) addr = 0x0004;
+		if (addr == 0x0018) addr = 0x0008;
+		if (addr == 0x001C) addr = 0x000C;
+
+		data = tblPalette[addr];
+	}
+
     return data;
 }
 
 void olc2c02::ppuWrite(uint16_t addr, uint8_t data)
 {
     addr &= 0x3FF;
+
+	if (cart->ppuWrite(addr, data)) {
+
+	}
+	else if (addr >= 0x0000 && addr <= 0x1FFF) {
+		tblPattern[(addr & 0x1000)][addr & 0x0FFF] = data;
+	}
+	else if (addr >= 0x2000 && addr <= 0x3EFF) {
+
+	}
+	else if (addr >= 0x3F00 && addr <= 0x3FFF) {
+		addr &= 0x001F;
+		if (addr == 0x0010) addr = 0x0000;
+		if (addr == 0x0014) addr = 0x0004;
+		if (addr == 0x0018) addr = 0x0008;
+		if (addr == 0x001C) addr = 0x000C;
+
+		tblPalette[addr] = data;
+	}
 }
 
 void olc2c02::ConnectCartridge(const std::shared_ptr<Cartridge>& cartridge)
@@ -134,10 +172,37 @@ olc::Sprite& olc2c02::GetScreen()
     return *sprScreen;
 }
 
+olc::Pixel& olc2c02::GetColourFromPaletteRam(uint8_t palette, uint8_t pixel)
+{
+	return palScreen[ppuRead(0x3F00 + (palette << 2) + pixel)];
+}
+
 olc::Sprite& olc2c02::GetNameTable(uint8_t i) {
     return *sprNameTable[i];
 }
 
-olc::Sprite& olc2c02::GetPatternTable(uint8_t i) {
+olc::Sprite& olc2c02::GetPatternTable(uint8_t i, uint8_t pallete) {
+	for (uint16_t nTileY = 0; nTileY < 16; nTileY++) {
+		for (uint16_t nTileX = 0; nTileX < 16; nTileX++) {
+			uint16_t nOffset = nTileY * 256 + nTileX * 16;
+
+			for (uint16_t row = 0; row < 8; row++) {
+				uint8_t tile_lsb = ppuRead(i * 0x1000 + nOffset + row + 0);
+				uint8_t tile_msb = ppuRead(i * 0x1000 + nOffset + row + 8);
+
+				for (uint16_t col = 0; col < 8; col++) {
+					uint8_t pixel = (tile_lsb & 0x01) + (tile_msb & 0x01);
+
+					tile_lsb >>= 1; tile_msb >>= 1;
+
+					sprPatternTable[i]->SetPixel(
+						nTileX * 8 + (7 - col),
+						nTileY * 8 + row,
+						GetColourFromPaletteRam(pallete, pixel)
+					);
+				}
+			}
+		}
+	}
     return *sprPatternTable[i];
 }

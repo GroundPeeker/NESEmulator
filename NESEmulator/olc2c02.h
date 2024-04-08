@@ -33,9 +33,10 @@ private:
 	olc::Sprite* sprPatternTable[2];
 
 public:
+	olc::Pixel& GetColourFromPaletteRam(uint8_t palette, uint8_t pixel);
 	olc::Sprite& GetScreen();
 	olc::Sprite& GetNameTable(uint8_t i);
-	olc::Sprite& GetPatternTable(uint8_t i);
+	olc::Sprite& GetPatternTable(uint8_t i, uint8_t pallete);
 	bool frame_complete = false;
 
 private:
