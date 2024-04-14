@@ -95,6 +95,36 @@ uint8_t olc2c02::cpuRead(uint16_t addr, bool rdonly)
 
 void olc2c02::cpuWrite(uint16_t addr, uint8_t data)
 {
+	switch (addr)
+	{
+	case 0x0000:
+		control.reg = data;
+		break;
+	case 0x0001:
+		mask.reg = data;
+		break;
+	case 0x0002:
+		break;
+	case 0x0003:
+		break;
+	case 0x0004:
+		break;
+	case 0x0005:
+		break;
+	case 0x0006:
+		if (address_latch == 0)
+		{
+			ppu_address = (ppu_address & 0xFF00) | data;
+			address_latch = 1;
+		}
+		else {
+			ppu_address = (ppu_address & 0x00FF) | (data << 8);
+			address_latch = 0;
+		}
+		break;
+	case 0x0007:
+		break;
+	}
 }
 
 uint8_t olc2c02::ppuRead(uint16_t addr, bool rdonly)
