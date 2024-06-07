@@ -3,19 +3,18 @@
 #include <memory>
 
 #include "Cartridge.h"
-#include "olcPixelGameEngine.h"
 
-class olc2c02
+class PPU
 {
 public:
-	olc2c02();
-	~olc2c02();
+	PPU();
+	~PPU();
 public:
-	uint8_t cpuRead(uint16_t addr, bool rdonly = false);
-	void cpuWrite(uint16_t addr, uint8_t data);
+	uint8_t readFromCPU(uint16_t addr, bool rdonly = false);
+	void writeFromCPU(uint16_t addr, uint8_t data);
 
-	uint8_t ppuRead(uint16_t addr, bool rdonly = false);
-	void ppuWrite(uint16_t addr, uint8_t data);
+	uint8_t readFromPPU(uint16_t addr, bool rdonly = false);
+	void writeFromPPU(uint16_t addr, uint8_t data);
 private:
 	std::shared_ptr<Cartridge> cart;
 	uint8_t tblName[2][1024];
@@ -25,19 +24,6 @@ private:
 public:
 	void ConnectCartridge(const std::shared_ptr<Cartridge>& cartridge);
 	void clock();
-
-private:
-	olc::Pixel palScreen[0x40];
-	olc::Sprite* sprScreen;
-	olc::Sprite* sprNameTable[2];
-	olc::Sprite* sprPatternTable[2];
-
-public:
-	olc::Pixel& GetColourFromPaletteRam(uint8_t palette, uint8_t pixel);
-	olc::Sprite& GetScreen();
-	olc::Sprite& GetNameTable(uint8_t i);
-	olc::Sprite& GetPatternTable(uint8_t i, uint8_t pallete);
-	bool frame_complete = false;
 
 private:
 	int16_t scanline = 0;
